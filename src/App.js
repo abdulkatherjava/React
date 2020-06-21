@@ -1,26 +1,84 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
+import Container from './Container'
 import './App.css';
+import {getAllStudents} from "./client"
+import {
+Table, Avatar
+} from 'antd';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  
+  state = {
+    students: []
+  }
+
+  componentDidMount() {
+    this.fetchtStudents();
+  }
+  fetchtStudents = () => {
+    getAllStudents()
+    .then(response => response.json()
+    .then(students =>{
+      console.log(students);
+      this.setState ({
+        students
+      });
+    }));
+  }
+  render() {
+    const {students} = this.state;
+    
+    if (students && students.length) {
+
+      const columns = [
+        {
+          title: '',
+          key: 'avatar',
+          render: (text, student) => (
+            <Avatar>
+              {`${student.firstName.charAt(0).toUpperCase()} ${student.lastName.charAt(0).toUpperCase()}`}
+            </Avatar>
+          )
+        },
+        {
+          title : "Student Id",
+          dataIndex : "studentId",
+          key : "studentId"
+        },
+        {
+          title : "First Name",
+          dataIndex : "firstName",
+          key : "firstName"
+        },
+        {
+          title : "Last Name",
+          dataIndex : "lastName",
+          key : "lastName"
+        },
+        {
+          title : "E-mail",
+          dataIndex : "email",
+          key : "email"
+        },
+        {
+          title : "Gender",
+          dataIndex : "gender",
+          key : "gender"
+        },
+      ];
+
+      return (
+      <Container>
+        <Table 
+          dataSource={students} 
+          columns={columns} 
+          pagination= {false}
+          rowKey='studentId'/>
+      </Container> )
+    }
+
+    return <h1>No Student found</h1>
+  }
 }
 
 export default App;
